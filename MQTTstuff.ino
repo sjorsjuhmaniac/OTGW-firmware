@@ -34,6 +34,7 @@
 void startMQTT() 
 {
   stateMQTT = MQTT_STATE_INIT;
+  wifiClient.setInsecure(); //use TLS connection, but do not check certificate
   handleMQTT(); //initialize the MQTT statemachine
   // handleMQTT(); //then try to connect to MQTT
   // handleMQTT(); //now you should be connected to MQTT ready to send

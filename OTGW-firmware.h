@@ -28,7 +28,8 @@
 #define CONOFF(x) (x?"On":"Off")
 
 //Global variables
-WiFiClient  wifiClient;
+//WiFiClient  wifiClient;
+WiFiClientSecure wifiClient;
 bool        Verbose = false;
 char        cMsg[CMSG_SIZE];
 char        fChar[10];
