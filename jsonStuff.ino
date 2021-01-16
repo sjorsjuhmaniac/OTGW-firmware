@@ -234,8 +234,20 @@ void sendJsonSettingObj(const char *cName, const char *cValue, const char *sType
   httpServer.sendContent(jsonBuff);
   sprintf(objSprtr, ",\r\n");
 
-} // sendJsonSettingObj(*char, *char, *char, int, int)
+} // sendJsonSettingObj(*char, *char, *char, int)
 
+//=======================================================================
+void sendJsonSettingObj(const char *cName, const bool *bValue, const char *sType)
+{
+  char jsonBuff[200] = "";
+
+  snprintf(jsonBuff, sizeof(jsonBuff), "%s{\"name\": \"%s\", \"value\":\"%s\", \"type\": \"%s}"
+                                      , objSprtr, cName, CBOOLEAN(bValue), sType );
+
+  httpServer.sendContent(jsonBuff);
+  sprintf(objSprtr, ",\r\n");
+
+} // sendJsonSettingObj(*char, *bool, *char)
 
 
 

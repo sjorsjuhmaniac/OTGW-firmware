@@ -324,6 +324,7 @@ void sendDeviceSettings()
   sendJsonSettingObj("mqttuser", CSTR(settingMQTTuser), "s", 32);
   sendJsonSettingObj("mqttpasswd", CSTR(settingMQTTpasswd), "s", 32);
   sendJsonSettingObj("mqtttoptopic", CSTR(settingMQTTtopTopic), "s", 15);
+  sendJsonSettingObj("mqttsecure", settingMQTTsecure, "b");
 
   sendEndJsonObj();
 

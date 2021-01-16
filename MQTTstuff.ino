@@ -15,15 +15,23 @@
 
 // Declare some variables within global scope
 
-  static IPAddress  MQTTbrokerIP;
-  static char       MQTTbrokerIPchar[20];
+  static IPAddress MQTTbrokerIP;
+  static char MQTTbrokerIPchar[20];
   
   #include <PubSubClient.h>           // MQTT client publish and subscribe functionality
+  #include <WiFiClientSecureBearSSL.h>
+  #include "certStore.h"
 
-  static            PubSubClient MQTTclient(wifiClient);
+  static WiFiClient wifiClient;
+  
+  WiFiClient *client;
+  BearSSL::WiFiClientSecure *httpsClient;
+  
+  BearSSL::CertStore lookupCertStore;
+  static PubSubClient MQTTclient(wifiClient);
 
-  int8_t            reconnectAttempts = 0;
-  char              lastMQTTtimestamp[15] = "";
+  int8_t reconnectAttempts = 0;
+  char lastMQTTtimestamp[15] = "";
 
   enum states_of_MQTT { MQTT_STATE_INIT, MQTT_STATE_TRY_TO_CONNECT, MQTT_STATE_IS_CONNECTED, MQTT_STATE_WAIT_CONNECTION_ATTEMPT, MQTT_STATE_WAIT_FOR_RECONNECT, MQTT_STATE_ERROR };
   enum states_of_MQTT stateMQTT = MQTT_STATE_INIT;
@@ -34,7 +42,16 @@
 void startMQTT() 
 {
   stateMQTT = MQTT_STATE_INIT;
-  wifiClient.setInsecure(); //use TLS connection, but do not check certificate
+
+  //based on settings either use SSL or not
+  if (settingMQTTsecure) {
+      wifiClient = new BearSSL::WiFiClientSecure();
+      //wifiClient.setInsecure(); //use TLS connection, but do not check certificate
+      installCertStore(&lookupCertStore);
+  } else {
+    wifiClient = new WifiClient();
+  }
+
   handleMQTT(); //initialize the MQTT statemachine
   // handleMQTT(); //then try to connect to MQTT
   // handleMQTT(); //now you should be connected to MQTT ready to send

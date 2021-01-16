@@ -28,8 +28,7 @@
 #define CONOFF(x) (x?"On":"Off")
 
 //Global variables
-//WiFiClient  wifiClient;
-WiFiClientSecure wifiClient;
+
 bool        Verbose = false;
 char        cMsg[CMSG_SIZE];
 char        fChar[10];
@@ -50,5 +49,6 @@ int16_t   settingMQTTbrokerPort = 1883;
 String    settingMQTTuser = "";
 String    settingMQTTpasswd = "";
 String    settingMQTTtopTopic = "OTGW";
+bool      settingMQTTsecure = false;
 
 // That's all folks...

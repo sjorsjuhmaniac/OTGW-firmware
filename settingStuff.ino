@@ -35,6 +35,7 @@ void writeSettings(bool show)
   root["MQTTuser"] = settingMQTTuser;
   root["MQTTpasswd"] = settingMQTTpasswd;
   root["MQTTtoptopic"] = settingMQTTtopTopic;
+  root["MQTTtoptopic"] = CBOOLEAN(settingMQTTsecure);
 
   serializeJsonPretty(root, file);
   Debugln(F("... done!"));
@@ -78,6 +79,7 @@ void readSettings(bool show)
   settingMQTTpasswd       = doc["MQTTpasswd"].as<String>();
   settingMQTTtopTopic     = doc["MQTTtoptopic"].as<String>();
   if (settingMQTTtopTopic.length()==0) settingMQTTtopTopic = _HOSTNAME;
+  settingMQTTsecure       = (doc["MQTTsecure"]=="True");
 
   // Close the file (Curiously, File's destructor doesn't close the file)
   file.close();
@@ -94,7 +96,8 @@ void readSettings(bool show)
     Debugf("                 MQTT port     : %d\r\n",  settingMQTTbrokerPort);
     Debugf("                 MQTT username : %s\r\n",  CSTR(settingMQTTuser));
     Debugf("                 MQTT password : %s\r\n",  CSTR(settingMQTTpasswd));
-    Debugf("                 MQTT toptopic : %s\r\n",  CSTR(settingMQTTtopTopic));
+    Debugf("                 MQTT toptopic : %s\r\n",  CSTR(settingMQTTtopTopic));    
+    Debugf("                 MQTT secure   : %s\r\n",  CSTR(settingMQTTsecure));
   }
   
   Debugln(F("-\r"));
@@ -125,8 +128,12 @@ void updateSetting(const char *field, const char *newValue)
   if (stricmp(field, "MQTTpasswd")==0)      settingMQTTpasswd = String(newValue);
   if (stricmp(field, "MQTTtoptopic")==0)    {
     settingMQTTtopTopic = String(newValue);
-    if (settingMQTTtopTopic.length()==0) settingMQTTtopTopic = "OTGW";
+    if (settingMQTTtopTopic.length()==0)    settingMQTTtopTopic = "OTGW";
   }
+  if (stricmp(field, "MQTTsecure")==0)      settingMQTTsecure = (stricmp(newValue, "True")==0);
+
+  //Always restart MQTT connection on any change...
+  startMQTT();
   
   //finally update write settings
   writeSettings(false);
