@@ -419,6 +419,39 @@ enum OpenThermStatus {
 	OT_RESPONSE_INVALID	
 };
 
+/*
+** This union of structures, maps the raw message to other formats
+** Source: Bron Schelte's nodemcu code 
+*/
+typedef union {
+  unsigned raw;
+  struct {
+    unsigned int value: 16;
+    unsigned int dataid: 8;
+    unsigned int spare: 4;
+    unsigned int msgtype: 3;
+    unsigned int parity: 1;
+  } frame;
+  struct {
+    unsigned int minutes: 8;
+    unsigned int hours: 5;
+    unsigned int weekday: 3;
+  } time;
+  struct {
+    unsigned int lb: 8;
+    unsigned int hb: 8;
+  } bytes;
+} otmessage;
+
+struct {
+  unsigned int timestamp;
+  unsigned int message;
+} history[3600];
+
+unsigned errorcnt[4];
+static unsigned short store[64];
+static uint64_t storemap[1];
+
 /**
  * Structure to hold Opentherm data packet content.
  * Use f88(), u16() or s16() functions to get appropriate value of data packet accoridng to id of message.
