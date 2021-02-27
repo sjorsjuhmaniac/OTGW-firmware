@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program : networkStuff.h
 **
-**  Version  : v0.7.8
+**  Version  : v0.8.0
 **
 **  Copyright (c) 2021 Robert van den Breemen
 **
