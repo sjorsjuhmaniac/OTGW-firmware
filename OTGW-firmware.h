@@ -42,6 +42,8 @@ void setLed(int8_t, uint8_t);
 #define SETTINGS_FILE   "/settings.ini"
 #define DEFAULT_TIMEZONE "Europe/Amsterdam"
 #define HOMEASSISTANT_PREFIX "homeassistant"
+#define DEFAULT_INFLUXDB_PORT 8086
+
 #define CMSG_SIZE 512
 #define JSON_BUFF_MAX   1024
 #define CSTR(x) x.c_str()
@@ -87,6 +89,10 @@ String    settingMQTTtopTopic = "OTGW";
 bool      settingNTPenable = true;
 String    settingNTPtimezone = DEFAULT_TIMEZONE;
 bool      settingLEDblink = true;
+bool      settingInfluxDBenable = false;
+String    settingInfluxDBhostname = "";
+uint16_t  settingInfluxDBport = 8086;
+String    settingInfluxDBdatabasename = "";
 
 
 //Now load network suff

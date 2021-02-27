@@ -40,6 +40,10 @@ void writeSettings(bool show)
   root["NTPenable"] = settingNTPenable;
   root["NTPtimezone"] = settingNTPtimezone;
   root["LEDblink"] = settingLEDblink;
+  root["InfluxDBenable"] = settingInfluxDBenable;
+  root["InfluxDBhostname"] = settingInfluxDBhostname;
+  root["InfluxDBport"] = settingInfluxDBport;
+  root["InfluxDBdatabasename"] = settingInfluxDBdatabasename;
 
   serializeJsonPretty(root, file);
   Debugln(F("... done!"));
@@ -76,20 +80,40 @@ void readSettings(bool show)
 
   // Copy values from the JsonDocument to the Config 
   settingHostname         = doc["hostname"].as<String>();
+  settingLEDblink         = doc["LEDblink"]|settingLEDblink;
+  //read MQTT settings
   if (settingHostname.length()==0) settingHostname = _HOSTNAME;
   settingMQTTenable       = doc["MQTTenable"]|settingMQTTenable; 
   settingMQTTbroker       = doc["MQTTbroker"].as<String>();
-  settingMQTTbrokerPort   = doc["MQTTbrokerPort"]; //default port
+  settingMQTTbrokerPort   = doc["MQTTbrokerPort"]|1883; //default port
   settingMQTTuser         = doc["MQTTuser"].as<String>();
   settingMQTTpasswd       = doc["MQTTpasswd"].as<String>();
   settingMQTTtopTopic     = doc["MQTTtoptopic"].as<String>();
   if (settingMQTTtopTopic=="null") settingMQTTtopTopic = _HOSTNAME;
   settingMQTThaprefix     = doc["MQTThaprefix"].as<String>();
   if (settingMQTThaprefix=="null") settingMQTThaprefix = HOMEASSISTANT_PREFIX;
+  //if broker setting == null, then revert to devaults
+  if (settingMQTTbroker="null") {
+    settingMQTTenable = false;
+    settingMQTTbroker = "";
+    settingMQTTbrokerPort = 1883;
+    settingMQTTuser = "";
+    settingMQTTpasswd = "";
+  }
+  //read NTP settings
   settingNTPenable        = doc["NTPenable"]; 
   settingNTPtimezone      = doc["NTPtimezone"].as<String>();
   if (settingNTPtimezone=="null")  settingNTPtimezone = "Europe/Amsterdam"; //default to amsterdam timezone
-  settingLEDblink         = doc["LEDblink"]|settingLEDblink;
+  //read InfluxDB settings
+  settingInfluxDBenable   = doc["InfluxDBenable"]|settingInfluxDBenable;
+  settingInfluxDBhostname = doc["InfluxDBhostname"].as<String>();
+  if (settingInfluxDBhostname="null") {
+    settingInfluxDBhostname = "";
+    settingInfluxDBenable = false;
+  }
+  settingInfluxDBport     = doc["InfluxDBport"]|DEFAULT_INFLUXDB_PORT; //default port
+  settingInfluxDBdatabasename = doc["InfluxDBdatabasename"].as<String>();
+  if (settingInfluxDBhostname=="null") settingInfluxDBhostname = "otgw";
 
   // Close the file (Curiously, File's destructor doesn't close the file)
   file.close();
@@ -101,16 +125,20 @@ void readSettings(bool show)
 
   if (show) {
     Debugln(F("\r\n==== read Settings ===================================================\r"));
-    Debugf("                 Hostname      : %s\r\n",  CSTR(settingHostname));
-    Debugf("                 MQTT enabled  : %s\r\n",  CBOOLEAN(settingMQTTenable));
-    Debugf("                 MQTT broker   : %s\r\n",  CSTR(settingMQTTbroker));
-    Debugf("                 MQTT port     : %d\r\n",  settingMQTTbrokerPort);
-    Debugf("                 MQTT username : %s\r\n",  CSTR(settingMQTTuser));
-    Debugf("                 MQTT password : %s\r\n",  CSTR(settingMQTTpasswd));
-    Debugf("                 MQTT toptopic : %s\r\n",  CSTR(settingMQTTtopTopic));
-    Debugf("                 HA prefix     : %s\r\n",  CSTR(settingMQTThaprefix));
-    Debugf("                 NTP enabled   : %s\r\n",  CBOOLEAN(settingNTPenable));
-    Debugf("                 NPT timezone  : %s\r\n",  CSTR(settingNTPtimezone));
+    Debugf("Hostname              : %s\r\n",  CSTR(settingHostname));
+    Debugf("MQTT enabled          : %s\r\n",  CBOOLEAN(settingMQTTenable));
+    Debugf("MQTT broker           : %s\r\n",  CSTR(settingMQTTbroker));
+    Debugf("MQTT port             : %d\r\n",  settingMQTTbrokerPort);
+    Debugf("MQTT username         : %s\r\n",  CSTR(settingMQTTuser));
+    Debugf("MQTT password         : %s\r\n",  CSTR(settingMQTTpasswd));
+    Debugf("MQTT toptopic         : %s\r\n",  CSTR(settingMQTTtopTopic));
+    Debugf("HA prefix             : %s\r\n",  CSTR(settingMQTThaprefix));
+    Debugf("NTP enabled           : %s\r\n",  CBOOLEAN(settingNTPenable));
+    Debugf("NPT timezone          : %s\r\n",  CSTR(settingNTPtimezone));
+    Debugf("InflexDB enabled      : %s\r\n",  CBOOLEAN(settingInfluxDBenable));
+    Debugf("InflexDB hostname     : %s\r\n",  CSTR(settingInfluxDBhostname));
+    Debugf("InflexDB port         : %d\r\n",  settingInfluxDBport);
+    Debugf("InflexDB databasename : %s\r\n",  CSTR(settingInfluxDBdatabasename));
   }
   
   Debugln(F("-\r"));
@@ -155,6 +183,12 @@ void updateSetting(const char *field, const char *newValue)
     startNTP();  // update timezone if changed
   }
   if (stricmp(field, "LEDblink")==0)      settingLEDblink = EVALBOOLEAN(newValue);
+  //update InfluxDB settings
+  if (stricmp(field, "InfluxDBenable")==0)        settingInfluxDBenable       = EVALBOOLEAN(newValue);
+  if (stricmp(field, "InfluxDBhostname")==0)      settingInfluxDBhostname     = String(newValue);
+  if (stricmp(field, "InfluxDBport")==0)          settingInfluxDBport         = atoi(newValue);
+  if (stricmp(field, "InfluxDBdatabasename")==0)  settingInfluxDBdatabasename = String(newValue);
+  
   //finally update write settings
   writeSettings(false);
   

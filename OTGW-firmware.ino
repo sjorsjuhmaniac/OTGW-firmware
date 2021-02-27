@@ -75,6 +75,7 @@ void setup() {
   startTelnet();  //start the debug port 23
   setupFSexplorer();
   startWebserver();
+  startInfluxDB();
 
   initWatchDog();       // setup the WatchDog
   OTGWSerial.println(F("Setup finished!\r\n"));

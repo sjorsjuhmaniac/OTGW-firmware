@@ -481,6 +481,7 @@ float print_f88()
   Debugf("%-37s = %s %s\r\n", OTmap[OTdata.id].label, _msg , OTmap[OTdata.id].unit);
   //SendMQTT
   sendMQTTData(messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), _msg);
+  writeInfluxDataPoint(OTmap[OTdata.id].label, _value, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return _value;
 }
 
@@ -494,6 +495,7 @@ int16_t print_s16()
   Debugf("%-37s = %s %s\r\n", OTmap[OTdata.id].label, _msg, OTmap[OTdata.id].unit);
   //SendMQTT
   sendMQTTData(messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), _msg);
+  writeInfluxDataPoint(OTmap[OTdata.id].label, _value, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return _value;
 }
 
@@ -508,12 +510,14 @@ uint16_t print_s8s8()
   strlcat(_topic, "_value_hb", sizeof(_topic));
   Debugf("%-37s = %s %s\r\n", OTmap[OTdata.id].label, _msg, OTmap[OTdata.id].unit);
   sendMQTTData(_topic, _msg);
+  writeInfluxDataPoint(_topic, (int8_t)OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //Build string for MQTT
   itoa((int8_t)OTdata.valueLB, _msg, 10);
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_value_lb", sizeof(_topic));
   Debugf("%-37s = %s %s\r\n", OTmap[OTdata.id].label, _msg, OTmap[OTdata.id].unit);
   sendMQTTData(_topic, _msg);
+  writeInfluxDataPoint(_topic, (int8_t)OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return  OTdata.u16();
 }
 
@@ -527,6 +531,7 @@ uint16_t print_u16()
   Debugf("%-37s = %s %s\r\n", OTmap[OTdata.id].label, _msg, OTmap[OTdata.id].unit);
   //SendMQTT
   sendMQTTData(messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), _msg);
+  writeInfluxDataPoint(OTmap[OTdata.id].label, _value, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return _value;
 }
 
@@ -561,6 +566,13 @@ uint16_t print_status()
   sendMQTTData("cooling_enable",        (((OTdata.valueHB) & 0x04) ? "ON" : "OFF")); 
   sendMQTTData("otc_active",            (((OTdata.valueHB) & 0x08) ? "ON" : "OFF"));
   sendMQTTData("ch2_enable",            (((OTdata.valueHB) & 0x10) ? "ON" : "OFF"));
+  
+  writeInfluxDataPoint("status_master",   OTdata.valueHB, "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("ch_enable",       CBOOLEAN(OTdata.valueHB & 0x01), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("dhw_enable",      CBOOLEAN(OTdata.valueHB & 0x02), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("cooling_enable",  CBOOLEAN(OTdata.valueHB & 0x04), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("otc_active",      CBOOLEAN(OTdata.valueHB & 0x08), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("ch2_enable",      CBOOLEAN(OTdata.valueHB & 0x10), "",  msglastupdated[OTdata.id]);
 
   //Slave
   //  0: fault indication [ no fault, fault ]
@@ -592,6 +604,16 @@ uint16_t print_status()
   sendMQTTData("cooling",               (((OTdata.valueLB) & 0x10) ? "ON" : "OFF"));  
   sendMQTTData("centralheating2",       (((OTdata.valueLB) & 0x20) ? "ON" : "OFF"));
   sendMQTTData("diagnostic_indicator",  (((OTdata.valueLB) & 0x40) ? "ON" : "OFF"));
+  
+  writeInfluxDataPoint("status_master",         OTdata.valueLB, "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("fault",                 CBOOLEAN(OTdata.valueLB & 0x01), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("centralheating",        CBOOLEAN(OTdata.valueLB & 0x02), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("domestichotwater",      CBOOLEAN(OTdata.valueLB & 0x04), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("flame",                 CBOOLEAN(OTdata.valueLB & 0x08), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("cooling",               CBOOLEAN(OTdata.valueLB & 0x10), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("centralheating2",       CBOOLEAN(OTdata.valueLB & 0x20), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("diagnostic_indicator",  CBOOLEAN(OTdata.valueLB & 0x40), "",  msglastupdated[OTdata.id]);
+  
   return OTdata.u16(); 
 }
 
@@ -602,8 +624,11 @@ uint16_t print_ASFflags()
   char _msg[15] {0};
   //Application Specific Fault
   sendMQTTData("ASF_flags", byte_to_binary(OTdata.valueHB));
+  writeInfluxDataPoint("ASF_flags", OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //OEM fault code
+  utoa(OTdata.valueLB, _msg, 10);
   sendMQTTData("ASF_oemfaultcode", _msg);
+  writeInfluxDataPoint("ASF_oemfaultcode", OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
 
   //bit: [clear/0, set/1]
     //bit: [clear/0, set/1]
@@ -620,7 +645,15 @@ uint16_t print_ASFflags()
   sendMQTTData("low_water_pressure",    (((OTdata.valueHB) & 0x04) ? "ON" : "OFF"));  
   sendMQTTData("gas_flame_fault",       (((OTdata.valueHB) & 0x08) ? "ON" : "OFF"));
   sendMQTTData("air_pressure_fault",    (((OTdata.valueHB) & 0x10) ? "ON" : "OFF"));  
-  sendMQTTData("water_over-temperature",(((OTdata.valueHB) & 0x20) ? "ON" : "OFF"));
+  sendMQTTData("water_over_temperature",(((OTdata.valueHB) & 0x20) ? "ON" : "OFF"));
+  
+  writeInfluxDataPoint("service_request",       CBOOLEAN(OTdata.valueHB & 0x01), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("lockout_reset",         CBOOLEAN(OTdata.valueHB & 0x02), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("low_water_pressure",    CBOOLEAN(OTdata.valueHB & 0x04), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("gas_flame_fault",       CBOOLEAN(OTdata.valueHB & 0x08), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("air_pressure_fault",    CBOOLEAN(OTdata.valueHB & 0x10), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("water_over_temperature",CBOOLEAN(OTdata.valueHB & 0x20), "",  msglastupdated[OTdata.id]);
+
   return  OTdata.u16();
 }
 
@@ -630,20 +663,18 @@ uint16_t print_slavememberid()
   Debugf("%-37s = Slave Config[%s] MemberID code [%3d]\r\n", OTmap[OTdata.id].label, byte_to_binary(OTdata.valueHB), OTdata.valueLB);
   //Build string for SendMQTT
   sendMQTTData("slave_configuration", byte_to_binary(OTdata.valueHB));
+  writeInfluxDataPoint("slave_configuration", OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   char _msg[15] {0};
   utoa(OTdata.valueLB, _msg, 10);
   sendMQTTData("slave_memberid_code", _msg);
-
+  writeInfluxDataPoint("slave_configuration", OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   
   // bit: description  [ clear/0, set/1] 
   // 0:  DHW present  [ dhw not present, dhw is present ] 
   // 1:  Control type  [ modulating, on/off ] 
-  // 2:  Cooling config  [ cooling not supported,  
-  //     cooling supported] 
-  // 3:  DHW config  [instantaneous or not-specified, 
-  //     storage tank] 
-  // 4:  Master low-off&pump control function [allowed, 
-  //     not allowed] 
+  // 2:  Cooling config  [ cooling not supported, cooling supported] 
+  // 3:  DHW config  [instantaneous or not-specified, storage tank] 
+  // 4:  Master low-off&pump control function [allowed, not allowed] 
   // 5:  CH2 present  [CH2 not present, CH2 present] 
   // 6:  reserved 
   // 7:  reserved 
@@ -651,8 +682,16 @@ uint16_t print_slavememberid()
   sendMQTTData("control_type",                            (((OTdata.valueHB) & 0x02) ? "ON" : "OFF"));  
   sendMQTTData("cooling_config",                          (((OTdata.valueHB) & 0x04) ? "ON" : "OFF"));  
   sendMQTTData("dhw_config",                              (((OTdata.valueHB) & 0x08) ? "ON" : "OFF"));
-  sendMQTTData("master_low_off_pomp_control_function",    (((OTdata.valueHB) & 0x10) ? "ON" : "OFF"));  
+  sendMQTTData("master_low_off_pump_control_function",    (((OTdata.valueHB) & 0x10) ? "ON" : "OFF"));  
   sendMQTTData("ch2_present",                             (((OTdata.valueHB) & 0x20) ? "ON" : "OFF"));
+  
+  writeInfluxDataPoint("dhw_present",                           CBOOLEAN(OTdata.valueHB & 0x01), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("control_type",                          CBOOLEAN(OTdata.valueHB & 0x02), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("cooling_config",                        CBOOLEAN(OTdata.valueHB & 0x04), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("dhw_config",                            CBOOLEAN(OTdata.valueHB & 0x08), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("master_low_off_pump_control_function",  CBOOLEAN(OTdata.valueHB & 0x10), "",  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("ch2_present",                           CBOOLEAN(OTdata.valueHB & 0x20), "",  msglastupdated[OTdata.id]);
+
   return OTdata.u16(); 
 }
 
@@ -662,8 +701,11 @@ uint16_t print_mastermemberid()
   //Build string for MQTT
   char _msg[15] {0};
   sendMQTTData("master_configuration", byte_to_binary(OTdata.valueHB));
+  writeInfluxDataPoint("master_configuration", OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
+
   utoa(OTdata.valueLB, _msg, 10);
   sendMQTTData("master_memberid_code", _msg);
+  writeInfluxDataPoint("master_memberid_code", OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16();
 }
 
@@ -676,12 +718,15 @@ uint16_t print_flag8u8()
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_flag8", sizeof(_topic));
   sendMQTTData(_topic, byte_to_binary(OTdata.valueHB));
+  writeInfluxDataPoint(_topic, OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
+  
   //u8 value
   char _msg[15] {0};
   utoa(OTdata.valueLB, _msg, 10);
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_code", sizeof(_topic));
   sendMQTTData(_topic, _msg);
+  writeInfluxDataPoint(_topic, OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16(); 
 }
 
@@ -697,6 +742,7 @@ uint16_t print_flag8()
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_flag8", sizeof(_topic));
   sendMQTTData(_topic, byte_to_binary(OTdata.valueLB));
+  writeInfluxDataPoint(_topic, OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16();
 }
 
@@ -709,11 +755,13 @@ uint16_t print_flag8flag8()
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_hb_flag8", sizeof(_topic));
   sendMQTTData(_topic, byte_to_binary(OTdata.valueHB));
+  writeInfluxDataPoint(_topic, OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //flag8 valueLB
   Debugf("%-37s = LB flag8[%s] - [%3d]\r\n", OTmap[OTdata.id].label, byte_to_binary(OTdata.valueLB), OTdata.valueLB);
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_lb_flag8", sizeof(_topic));
   sendMQTTData(_topic, byte_to_binary(OTdata.valueLB));
+  writeInfluxDataPoint(_topic, OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16();
 }
 
@@ -729,12 +777,14 @@ uint16_t print_u8u8()
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_hb_u8", sizeof(_topic));
   sendMQTTData(_topic, _msg);
+  writeInfluxDataPoint(_topic, OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //flag8 valueLB
   utoa((OTdata.valueLB), _msg, 10);
   Debugf("%-37s = LB u8[%s] [%3d]\r\n", OTmap[OTdata.id].label, _msg, OTdata.valueLB);
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_lb_u8", sizeof(_topic));
   sendMQTTData(_topic, _msg);
+  writeInfluxDataPoint(_topic, OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16();
 }
 
@@ -751,17 +801,19 @@ uint16_t print_daytime()
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_dayofweek", sizeof(_topic));
   sendMQTTData(_topic, dayOfWeekName[(OTdata.valueHB >> 5) & 0x7]);
+  //writeInfluxDataPoint(_topic, dayOfWeekName[(OTdata.valueHB >> 5) & 0x7], OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //dayofweek
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_hour", sizeof(_topic));
   sendMQTTData(_topic, itoa((OTdata.valueHB & 0x1F), _msg, 10)); 
+  //writeInfluxDataPoint(_topic, OTdata.valueHB & 0x1F, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   //dayofweek
   strlcpy(_topic, messageIDToString(static_cast<OpenThermMessageID>(OTdata.id)), sizeof(_topic));
   strlcat(_topic, "_minutes", sizeof(_topic));
-  sendMQTTData(_topic, itoa(OTdata.valueLB, _msg, 10)); 
+  sendMQTTData(_topic, itoa(OTdata.valueLB, _msg, 10));  
+  //writeInfluxDataPoint(_topic, OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return _value;
 }
-
 
 //===================[ Send buffer to OTGW ]=============================
 

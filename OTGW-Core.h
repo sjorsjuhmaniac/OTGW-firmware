@@ -7,6 +7,10 @@
 **  Borrowed from OpenTherm library from: 
 **      https://github.com/jpraus/arduino-opentherm
 **
+**
+**  Inspired on different projects:
+** 	  - Ihor Melnyk https://github.com/ihormelnyk/OpenTherm / http://ihormelnyk.com/pages/OpenTherm
+**
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************       
 */  
