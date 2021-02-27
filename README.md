@@ -46,7 +46,7 @@ Looking for the documentation, go here (work in progress):  <br> https://github.
   
 | Version | Release notes |
 |-|-|
-| 0.8.0 | Adding restapi that is Telegraf friendly. <br> Adding influxdb support. <br> ASF code bug fixed <br> Fixed: label "pomp" to "pump"  | 
+| 0.8.0 | Adding restapi that is Telegraf friendly. <br> Adding direct influxdb support. <br> ASF code bug fixed <br> Fixed: label "pomp" to "pump" & more | 
 | 0.7.8 | Update to Homeassistant Autodiscovery. <br> Flexible Homeassistant prefix <br> Bugfix: Removed hardcoded OTGW topic. <br> Bugfix: NTP timezone discovery removed | 
 | 0.7.7 | UI improved: Only show updates values in web UI <br> Bugifx: Serial not found error when sending commands thru MQTT fixed |
 | 0.7.6 | PIC firmware integration done. <br> New setting: NTP configurable <br> New setting: heartbeat led on/off <br> Update to REST API to include epoch of last update to message|
