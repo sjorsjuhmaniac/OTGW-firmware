@@ -705,7 +705,7 @@ uint16_t print_mastermemberid()
 
   utoa(OTdata.valueLB, _msg, 10);
   sendMQTTData("master_memberid_code", _msg);
-  writeInfluxDataPoint("master_memberid_code", OTdata.valueHB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
+  writeInfluxDataPoint("master_memberid_code", OTdata.valueLB, OTmap[OTdata.id].unit,  msglastupdated[OTdata.id]);
   return OTdata.u16();
 }
 
