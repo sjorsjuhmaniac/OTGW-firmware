@@ -94,8 +94,8 @@ void writeInfluxDataPoint(const char *key, const char *value, const char *unit, 
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
   
-  // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
+  DebugTf("Writing to influxdb: %s\r\n", CSTR(pointItem.toLineProtocol()));          
+  // if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 
@@ -115,8 +115,8 @@ void writeInfluxDataPoint(const char *key, const int value, const char *unit, co
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
   
-  // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
+  DebugTf("Writing to influxdb: %s\r\n", CSTR(pointItem.toLineProtocol()));          
+  // if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 void writeInfluxDataPoint(const char *key, const bool value, const char *unit, const time_t epoch){
@@ -135,8 +135,8 @@ void writeInfluxDataPoint(const char *key, const bool value, const char *unit, c
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
   
-  // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
+  DebugTf("Writing to influxdb: %s\r\n", CSTR(pointItem.toLineProtocol()));          
+  // if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 void writeInfluxDataPoint(const char *key, const float value, const char *unit, const time_t epoch){
@@ -155,8 +155,8 @@ void writeInfluxDataPoint(const char *key, const float value, const char *unit, 
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
   
-  // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
+  DebugTf("Writing to influxdb: %s\r\n", CSTR(pointItem.toLineProtocol()));          
+  // if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 /***************************************************************************
