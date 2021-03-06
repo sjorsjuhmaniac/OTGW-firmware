@@ -5,9 +5,13 @@ void handleDebug(){
         c = TelnetStream.read();
         switch (c){
             case 'm':
-                DebugTln("Configure MQTT Discovery");
-                DebugTf("Enable MQTT: %s", CBOOLEAN(settingMQTTenable));
+                DebugTln("Debug Command ==> Configure MQTT Discovery");
+                DebugTf("Enable MQTT: %s\r\n", CBOOLEAN(settingMQTTenable));
                 doAutoConfigure();
+            break;
+            case 'r':
+                DebugTln("Debug Command ==> Initialize MQTT");
+                startMQTT();
             break;
             default:
             break;
