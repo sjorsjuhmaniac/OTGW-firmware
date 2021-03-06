@@ -13,6 +13,10 @@ void handleDebug(){
                 DebugTln("Debug Command ==> Initialize MQTT");
                 startMQTT();
             break;
+            case 'i':
+                DebugTln("Debug Command ==> Initialize InfluxDB");
+                startInfluxDB();
+            break;
             default:
             break;
         }

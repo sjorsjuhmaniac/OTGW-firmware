@@ -86,7 +86,7 @@ void writeInfluxDataPoint(const char *key, const char *value, const char *unit, 
   }
 
   time_t thisEpoch = now()- (isDST() ? 7200 : 3600);
-  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
+  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)\r\n", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
   //pointItem.setTime(thisEpoch);
@@ -95,7 +95,7 @@ void writeInfluxDataPoint(const char *key, const char *value, const char *unit, 
   pointItem.addField("epoch", epoch);
   
   // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: ", CSTR(client.getLastErrorMessage()));
+  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 
@@ -107,7 +107,7 @@ void writeInfluxDataPoint(const char *key, const int value, const char *unit, co
   }
 
   time_t thisEpoch = now()- (isDST() ? 7200 : 3600);
-  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
+  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)\r\n", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
   // pointItem.setTime(thisEpoch);
@@ -116,7 +116,7 @@ void writeInfluxDataPoint(const char *key, const int value, const char *unit, co
   pointItem.addField("epoch", epoch);
   
   // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: ", CSTR(client.getLastErrorMessage()));
+  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 void writeInfluxDataPoint(const char *key, const bool value, const char *unit, const time_t epoch){
@@ -127,7 +127,7 @@ void writeInfluxDataPoint(const char *key, const bool value, const char *unit, c
   }
 
   time_t thisEpoch = now()- (isDST() ? 7200 : 3600);
-  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
+  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)\r\n", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
   // pointItem.setTime(thisEpoch);
@@ -136,7 +136,7 @@ void writeInfluxDataPoint(const char *key, const bool value, const char *unit, c
   pointItem.addField("epoch", epoch);
   
   // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: ", CSTR(client.getLastErrorMessage()));
+  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 void writeInfluxDataPoint(const char *key, const float value, const char *unit, const time_t epoch){
@@ -147,7 +147,7 @@ void writeInfluxDataPoint(const char *key, const float value, const char *unit, 
   }
 
   time_t thisEpoch = now()- (isDST() ? 7200 : 3600);
-  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
+  DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)\r\n", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
   //pointItem.setTime(thisEpoch);
@@ -156,7 +156,7 @@ void writeInfluxDataPoint(const char *key, const float value, const char *unit, 
   pointItem.addField("epoch", epoch);
   
   // DebugTf("Writing to influxdb: %s", CSTR(pointItem.toLineProtocol()));          
-  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: ", CSTR(client.getLastErrorMessage()));
+  if (!client.writePoint(pointItem)) DebugTf("InfluxDB write failed: %s\r\n", CSTR(client.getLastErrorMessage()));
 }
 
 /***************************************************************************
