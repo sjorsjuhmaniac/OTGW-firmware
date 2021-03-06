@@ -704,6 +704,10 @@
    ,[ "uptime",                     "Uptime since boot"]
    ,[ "bootcount",                  "Nr. Reboots"] 
    ,[ "ledblink",                   "Heartbeat LED (on/off)"]
+   ,[ "influxdbenable",             "InfluxDB Enable"]
+   ,[ "influxdbhostname",           "InfluxDB Hostname"]
+   ,[ "influxdbport",               "InfluxDB Port"]
+   ,[ "influxdbdatabasename",       "InfluxDB databasename"]
                  ];
   
 /*

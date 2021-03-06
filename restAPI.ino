@@ -410,6 +410,10 @@ void sendDeviceSettings()
   // sendJsonSettingObj("mqttfieldset","off", "f");
   sendJsonSettingObj("ntpenable", settingNTPenable, "b");
   sendJsonSettingObj("ntptimezone", CSTR(settingNTPtimezone), "s", 50);
+  sendJsonSettingObj("influxdbenable", settingInfluxDBenable, "b");
+  sendJsonSettingObj("influxdbhostname", CSTR(settingInfluxDBhostname), "s", 32);
+  sendJsonSettingObj("influxdbport", settingInfluxDBport, "i", 0, 65535);
+  sendJsonSettingObj("influxdbdatabasename", CSTR(settingInfluxDBdatabasename), "s", 32);
   sendJsonSettingObj("ledblink", settingLEDblink, "b");
   sendEndJsonObj("settings");
 

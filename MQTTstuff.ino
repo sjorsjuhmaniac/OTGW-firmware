@@ -77,9 +77,9 @@ void handleMQTT()
       DebugTln(F("MQTT State: MQTT Initializing")); 
       WiFi.hostByName(CSTR(settingMQTTbroker), MQTTbrokerIP);  // lookup the MQTTbroker convert to IP
       sprintf(MQTTbrokerIPchar, "%d.%d.%d.%d", MQTTbrokerIP[0], MQTTbrokerIP[1], MQTTbrokerIP[2], MQTTbrokerIP[3]);
+      DebugTf("[%s] => setServer(%s, %d)\r\n", CSTR(settingMQTTbroker), MQTTbrokerIPchar, settingMQTTbrokerPort);
       if (isValidIP(MQTTbrokerIP))  
       {
-        DebugTf("[%s] => setServer(%s, %d)\r\n", CSTR(settingMQTTbroker), MQTTbrokerIPchar, settingMQTTbrokerPort);
         MQTTclient.disconnect();
         MQTTclient.setServer(MQTTbrokerIPchar, settingMQTTbrokerPort);
         MQTTclient.setCallback(handleMQTTcallback);
@@ -98,7 +98,7 @@ void handleMQTT()
 
     case MQTT_STATE_TRY_TO_CONNECT:
       DebugTln(F("MQTT State: MQTT try to connect"));
-      //DebugTf("MQTT server is [%s], IP[%s]\r\n", settingMQTTbroker.c_str(), MQTTbrokerIPchar);
+      DebugTf("MQTT server is [%s], IP[%s]\r\n", settingMQTTbroker.c_str(), MQTTbrokerIPchar);
       
       DebugT(F("Attempting MQTT connection .. "));
       reconnectAttempts++;

@@ -97,8 +97,9 @@ void readSettings(bool show)
   if (settingMQTThaprefix=="null") settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
   //if broker setting == null, then revert to devaults
   if (settingMQTTbroker="null") {
+    DebugTln("NULL detected: Setting back MQTT Debug defaults");
     settingMQTTenable = false;
-    settingMQTTbroker = "";
+    settingMQTTbroker = "192.168.88.254";
     settingMQTTbrokerPort = 1883;
     settingMQTTuser = "";
     settingMQTTpasswd = "";
@@ -111,7 +112,8 @@ void readSettings(bool show)
   settingInfluxDBenable   = doc["InfluxDBenable"]|settingInfluxDBenable;
   settingInfluxDBhostname = doc["InfluxDBhostname"].as<String>();
   if (settingInfluxDBhostname="null") {
-    settingInfluxDBhostname = "";
+    DebugTln("NULL detected: Setting back InfluxDB Debug defaults");
+    settingInfluxDBhostname = "192.168.88.254";
     settingInfluxDBenable = false;
   }
   settingInfluxDBport     = doc["InfluxDBport"]|DEFAULT_INFLUXDB_PORT; //default port
@@ -138,11 +140,11 @@ void readSettings(bool show)
     Debugf("HA prefix             : %s\r\n",  CSTR(settingMQTThaprefix));
     Debugf("NTP enabled           : %s\r\n",  CBOOLEAN(settingNTPenable));
     Debugf("NPT timezone          : %s\r\n",  CSTR(settingNTPtimezone));
+    Debugf("InfluxDB enabled      : %s\r\n",  CBOOLEAN(settingInfluxDBenable));
+    Debugf("InfluxDB hostname     : %s\r\n",  CSTR(settingInfluxDBhostname));
+    Debugf("InfluxDB port         : %d\r\n",  settingInfluxDBport);
+    Debugf("InfluxDB databasename : %s\r\n",  CSTR(settingInfluxDBdatabasename));
     Debugf("Led Blink             : %s\r\n",  CBOOLEAN(settingLEDblink));
-    Debugf("InflexDB enabled      : %s\r\n",  CBOOLEAN(settingInfluxDBenable));
-    Debugf("InflexDB hostname     : %s\r\n",  CSTR(settingInfluxDBhostname));
-    Debugf("InflexDB port         : %d\r\n",  settingInfluxDBport);
-    Debugf("InflexDB databasename : %s\r\n",  CSTR(settingInfluxDBdatabasename));
   }
   
   Debugln(F("-\r\n"));

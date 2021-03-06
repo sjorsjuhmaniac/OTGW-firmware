@@ -38,7 +38,7 @@ InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB_NAME);
 //  Eastern:        "EST5EDT"
 //  Japanesse:      "JST-9"
 //  Central Europe: "CET-1CEST,M3.5.0,M10.5.0/3"
-#define TZ_INFO "CET-1CEST,M3.5.0,M10.5.0/3"
+// #define TZ_INFO "CET-1CEST,M3.5.0,M10.5.0/3"
 #define WRITE_PRECISION WritePrecision::S
 #define MAX_BATCH_SIZE 16
 #define WRITE_BUFFER_SIZE 32
@@ -89,7 +89,7 @@ void writeInfluxDataPoint(const char *key, const char *value, const char *unit, 
   DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
-  pointItem.setTime(thisEpoch);
+  //pointItem.setTime(thisEpoch);
   pointItem.addTag("instance", key);     
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
@@ -110,7 +110,7 @@ void writeInfluxDataPoint(const char *key, const int value, const char *unit, co
   DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
-  pointItem.setTime(thisEpoch);
+  // pointItem.setTime(thisEpoch);
   pointItem.addTag("instance", key);     
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
@@ -130,7 +130,7 @@ void writeInfluxDataPoint(const char *key, const bool value, const char *unit, c
   DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
-  pointItem.setTime(thisEpoch);
+  // pointItem.setTime(thisEpoch);
   pointItem.addTag("instance", key);     
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
@@ -150,7 +150,7 @@ void writeInfluxDataPoint(const char *key, const float value, const char *unit, 
   DebugTf("InfluxDB write [%s]=[%s] [%s] (%d) | epoch (%d)", key, value, unit, epoch, thisEpoch );  
 
   Point pointItem(unit);
-  pointItem.setTime(thisEpoch);
+  //pointItem.setTime(thisEpoch);
   pointItem.addTag("instance", key);     
   pointItem.addField("value", value);
   pointItem.addField("epoch", epoch);
