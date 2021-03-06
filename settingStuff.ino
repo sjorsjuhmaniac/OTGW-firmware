@@ -96,7 +96,7 @@ void readSettings(bool show)
   settingMQTThaprefix     = doc["MQTThaprefix"].as<String>();
   if (settingMQTThaprefix=="null") settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
   //if broker setting == null, then revert to devaults
-  if (settingMQTTbroker="null") {
+  if (settingMQTTbroker=="null") {
     DebugTln("NULL detected: Setting back MQTT Debug defaults");
     settingMQTTenable = false;
     settingMQTTbroker = "192.168.88.254";
@@ -111,7 +111,7 @@ void readSettings(bool show)
   //read InfluxDB settings
   settingInfluxDBenable   = doc["InfluxDBenable"]|settingInfluxDBenable;
   settingInfluxDBhostname = doc["InfluxDBhostname"].as<String>();
-  if (settingInfluxDBhostname="null") {
+  if (settingInfluxDBhostname=="null") {
     DebugTln("NULL detected: Setting back InfluxDB Debug defaults");
     settingInfluxDBhostname = "192.168.88.254";
     settingInfluxDBenable = false;
