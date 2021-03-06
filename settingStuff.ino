@@ -94,7 +94,7 @@ void readSettings(bool show)
     settingMQTTtopTopic.toLowerCase();
   }
   settingMQTThaprefix     = doc["MQTThaprefix"].as<String>();
-  if (settingMQTThaprefix=="null") settingMQTThaprefix = HOMEASSISTANT_PREFIX;
+  if (settingMQTThaprefix=="null") settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
   //if broker setting == null, then revert to devaults
   if (settingMQTTbroker="null") {
     settingMQTTenable = false;
