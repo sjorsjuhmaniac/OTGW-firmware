@@ -1,6 +1,5 @@
-
-.vscode/arduino.json
 node_modules/*
 package-lock.json
-
+*.log
 *.bin
+.vscode/*

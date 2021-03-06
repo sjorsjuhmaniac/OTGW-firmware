@@ -41,9 +41,8 @@ void setLed(int8_t, uint8_t);
 #define _HOSTNAME       "OTGW"
 #define SETTINGS_FILE   "/settings.ini"
 #define DEFAULT_TIMEZONE "Europe/Amsterdam"
-#define HOMEASSISTANT_PREFIX "homeassistant"
 #define DEFAULT_INFLUXDB_PORT 8086
-
+#define HOME_ASSISTANT_DISCOVERY_PREFIX   "homeassistant"  // Home Assistant discovery prefix
 #define CMSG_SIZE 512
 #define JSON_BUFF_MAX   1024
 #define CSTR(x) x.c_str()
@@ -84,8 +83,8 @@ String    settingMQTTbroker= "192.168.88.254";
 int16_t   settingMQTTbrokerPort = 1883; 
 String    settingMQTTuser = "";
 String    settingMQTTpasswd = "";
-String    settingMQTThaprefix = HOMEASSISTANT_PREFIX;
-String    settingMQTTtopTopic = "OTGW";
+String    settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
+String    settingMQTTtopTopic = "otgw";
 bool      settingNTPenable = true;
 String    settingNTPtimezone = DEFAULT_TIMEZONE;
 bool      settingLEDblink = true;

@@ -84,6 +84,16 @@ String getpicfwversion(){
   _ret.trim();
   return _ret;
 }
+//===================[ checkOTWGpicforupdate ]=====================
+void checkOTWGpicforupdate(){
+  DebugTf("OTGW PIC firmware version = [%s]\r\n", CSTR(sPICfwversion));
+  String latest = checkforupdatepic("gateway.hex");
+  if (!bOTGWonline) {
+    sMessage = sPICfwversion; 
+  } else if (latest != sPICfwversion) {
+    sMessage = "New PIC version " + latest + " available!";
+  }
+}
 //===================[ OTGW Command & Response ]===================
 String executeCommand(const String sCmd){
   //send command to OTGW
@@ -263,6 +273,7 @@ void feedWatchDog() {
     Wire.beginTransmission(EXT_WD_I2C_ADDRESS);   //Nodoshop design uses the hardware WD on I2C, address 0x26
     Wire.write(0xA5);                             //Feed the dog, before it bites.
     Wire.endTransmission();                       //That's all there is...
+    if (settingLEDblink) blinkLEDnow(LED1);
   }
   yield();
   //==== feed the WD over I2C ==== 
@@ -1033,7 +1044,6 @@ void handleOTGW()
   //handle incoming data from network (port 25238) sent to serial port OTGW (WRITE BUFFER)
   while (OTGWstream.available()){
     //OTGWSerial.write(OTGWstream.read()); //just forward it directly to Serial
-    blinkLEDnow(LED2);
     outByte = OTGWstream.read();  // read from port 25238
     while (OTGWSerial.availableForWrite()==0) {
       //cannot write, buffer full, wait for some space in serial out buffer
@@ -1071,6 +1081,7 @@ void handleOTGW()
     if (inByte== '\n')
     { //line terminator, continue to process incoming message
       sRead[bytes_read] = 0;
+      blinkLEDnow(LED2);
       processOTGW(sRead, bytes_read);
       bytes_read = 0;
       break; // to continue processing incoming message
@@ -1248,10 +1259,10 @@ String checkforupdatepic(String filename){
   code = http.sendRequest("HEAD");
   if (code == HTTP_CODE_OK) {
     for (int i = 0; i< http.headers(); i++) {
-      DebugTf("%s: %s\n", hexheaders[i], http.header(i).c_str());
+      DebugTf("%s: %s\r\n", hexheaders[i], http.header(i).c_str());
     }
     latest = http.header(1);
-    DebugTf("Update %s -> %s\n", filename.c_str(), latest.c_str());
+    DebugTf("Update %s -> %s\r\n", filename.c_str(), latest.c_str());
     http.end();
   }
   return latest; 
@@ -1265,7 +1276,7 @@ void refreshpic(String filename, String version) {
 
   if (latest=checkforupdatepic(filename) != "") {
     if (latest != version) {
-      DebugTf("Update %s: %s -> %s\n", filename.c_str(), version.c_str(), latest.c_str());
+      DebugTf("Update %s: %s -> %s\r\n", filename.c_str(), version.c_str(), latest.c_str());
       http.begin(client, "http://otgw.tclcode.com/download/" + filename);
       code = http.GET();
       if (code == HTTP_CODE_OK) {

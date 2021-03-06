@@ -89,7 +89,10 @@ void readSettings(bool show)
   settingMQTTuser         = doc["MQTTuser"].as<String>();
   settingMQTTpasswd       = doc["MQTTpasswd"].as<String>();
   settingMQTTtopTopic     = doc["MQTTtoptopic"].as<String>();
-  if (settingMQTTtopTopic=="null") settingMQTTtopTopic = _HOSTNAME;
+  if (settingMQTTtopTopic=="null") {
+    settingMQTTtopTopic = _HOSTNAME;
+    settingMQTTtopTopic.toLowerCase();
+  }
   settingMQTThaprefix     = doc["MQTThaprefix"].as<String>();
   if (settingMQTThaprefix=="null") settingMQTThaprefix = HOMEASSISTANT_PREFIX;
   //if broker setting == null, then revert to devaults
@@ -121,7 +124,7 @@ void readSettings(bool show)
   //Update some settings right now 
   MDNS.setHostname(CSTR(settingHostname));    // start advertising with new(?) settingHostname
 
-  DebugTln(F(" .. done\r"));
+  DebugTln(F(" .. done\r\n"));
 
   if (show) {
     Debugln(F("\r\n==== read Settings ===================================================\r"));
@@ -135,13 +138,14 @@ void readSettings(bool show)
     Debugf("HA prefix             : %s\r\n",  CSTR(settingMQTThaprefix));
     Debugf("NTP enabled           : %s\r\n",  CBOOLEAN(settingNTPenable));
     Debugf("NPT timezone          : %s\r\n",  CSTR(settingNTPtimezone));
+    Debugf("Led Blink             : %s\r\n",  CBOOLEAN(settingLEDblink));
     Debugf("InflexDB enabled      : %s\r\n",  CBOOLEAN(settingInfluxDBenable));
     Debugf("InflexDB hostname     : %s\r\n",  CSTR(settingInfluxDBhostname));
     Debugf("InflexDB port         : %d\r\n",  settingInfluxDBport);
     Debugf("InflexDB databasename : %s\r\n",  CSTR(settingInfluxDBdatabasename));
   }
   
-  Debugln(F("-\r"));
+  Debugln(F("-\r\n"));
 
 } // readSettings()
 
@@ -170,11 +174,14 @@ void updateSetting(const char *field, const char *newValue)
   if (stricmp(field, "MQTTpasswd")==0)      settingMQTTpasswd = String(newValue);
   if (stricmp(field, "MQTTtoptopic")==0)    {
     settingMQTTtopTopic = String(newValue);
-    if (settingMQTTtopTopic.length()==0) settingMQTTtopTopic = "OTGW";
+    if (settingMQTTtopTopic.length()==0)    {
+      settingMQTTtopTopic = _HOSTNAME;
+      settingMQTTtopTopic.toLowerCase();
+    }
   }
   if (stricmp(field, "MQTThaprefix")==0)    {
     settingMQTThaprefix = String(newValue);
-    if (settingMQTThaprefix.length()==0) settingMQTThaprefix = HOMEASSISTANT_PREFIX;
+    if (settingMQTThaprefix.length()==0) settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
   }
   
   if (stricmp(field, "NTPenable")==0)      settingNTPenable = EVALBOOLEAN(newValue);

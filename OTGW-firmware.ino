@@ -41,13 +41,11 @@ void setup() {
   
   OTGWSerial.println(F("\r\n[OTGW firmware - Nodoshop version]\r\n"));
   OTGWSerial.printf("Booting....[%s]\r\n\r\n", String(_FW_VERSION).c_str());
-
   rebootCount = updateRebootCount();
 
   //setup randomseed the right way
   randomSeed(RANDOM_REG32); //This is 8266 HWRNG used to seed the Random PRNG: Read more: https://config9.com/arduino/getting-a-truly-random-number-in-arduino/
-
-  lastReset     = ESP.getResetReason();
+  lastReset = ESP.getResetReason();
   OTGWSerial.printf("Last reset reason: [%s]\r\n", CSTR(ESP.getResetReason()));
 
   //setup the status LED
@@ -61,15 +59,11 @@ void setup() {
   OTGWSerial.println(F("Attempting to connect to WiFi network\r"));
   setLed(LED1, ON);
   startWiFi(_HOSTNAME, 240);  // timeout 240 seconds
-  for (int i=0; i<=3;i++) {
-    blinkLEDnow(LED1);
-    delay(100);
-    blinkLEDnow(LED1);
-    delay(100);
-  }
+  blinkLED(LED1, 3, 100);
   setLed(LED1, OFF);
 
   startMDNS(CSTR(settingHostname));
+  startLLMNR(CSTR(settingHostname));
   startMQTT(); 
   startNTP();
   startTelnet();  //start the debug port 23
@@ -77,31 +71,21 @@ void setup() {
   startWebserver();
   startInfluxDB();
 
-  initWatchDog();       // setup the WatchDog
+
   OTGWSerial.println(F("Setup finished!\r\n"));
   // After resetting the OTGW PIC never send anything to Serial for debug
   // and switch to telnet port 23 for debug purposed. 
   // Setup the OTGW PIC
   resetOTGW();          // reset the OTGW pic
   startOTGWstream();    // start port 25238 
-  DebugTf("OTGW PIC firmware version = [%s]\r\n", CSTR(sPICfwversion));
-  String latest = checkforupdatepic("gateway.hex");
-  if (!bOTGWonline) {
-    sMessage = sPICfwversion; 
-  } else if (latest != sPICfwversion) {
-    sMessage = "New PIC version " + latest + " available!";
-  }
-  DebugTf("Reboot count = [%d]\r\n", rebootCount);
-  setLed(LED1, OFF);
+  checkOTWGpicforupdate();
+
+  initWatchDog();       // setup the WatchDog
   //Blink LED2 to signal setup done
-  for (int i=0; i<=3;i++) {
-    blinkLEDnow(LED2);
-    delay(100);
-    blinkLEDnow(LED2);
-    delay(100);
-  }
+  setLed(LED1, OFF);
+  blinkLED(LED2, 3, 100);
   setLed(LED2, OFF);
-}
+  }
 
 //=====================================================================
 
@@ -120,8 +104,13 @@ void blinkLEDms(uint32_t delay){
   }
 }
 
-void blinkLEDnow(){
-  blinkLEDnow(LED1);
+void blinkLED(uint8_t led, int nr, uint32_t waittime_ms){
+    for (int i = nr; i>0; i--){
+      blinkLEDnow(led);
+      delayms(waittime_ms);
+      blinkLEDnow(led);
+      delayms(waittime_ms);
+    }
 }
 
 void blinkLEDnow(uint8_t led = LED1){
@@ -188,9 +177,10 @@ void doBackgroundTasks()
   httpServer.handleClient();
   MDNS.update();
   events();                     // trigger ezTime update etc.
-  // 'blink' the status led every x ms
-  if (settingLEDblink) blinkLEDms(1000);             
+  // // 'blink' the status led every x ms
+  // if (settingLEDblink) blinkLEDms(1000);             
   delay(1);
+  handleDebug();
 }
 
 void loop()
