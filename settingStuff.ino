@@ -27,7 +27,7 @@ void writeSettings(bool show)
   DebugT(F("Start writing setting data "));
 
   //const size_t capacity = JSON_OBJECT_SIZE(6);  // save more setting, grow # of objects accordingly
-  DynamicJsonDocument doc(512);
+  DynamicJsonDocument doc(1024);
   JsonObject root  = doc.to<JsonObject>();
   root["hostname"] = settingHostname;
   root["MQTTenable"] = settingMQTTenable;
@@ -43,6 +43,11 @@ void writeSettings(bool show)
   root["LEDblink"] = settingLEDblink;
   root["GPIOSENSORSenabled"] = settingGPIOSENSORSenabled;
   root["GPIOSENSORSpin"] = settingGPIOSENSORSpin;
+  root["OTGWcommandenable"] = settingOTGWcommandenable;
+  root["OTGWcommands"] = settingOTGWcommands;
+  root["GPIOOUTPUTSenabled"] = settingGPIOOUTPUTSenabled;
+  root["GPIOOUTPUTSpin"] = settingGPIOOUTPUTSpin;
+  root["GPIOOUTPUTStriggerBit"] = settingGPIOOUTPUTStriggerBit;
 
   serializeJsonPretty(root, file);
   Debugln(F("... done!"));
@@ -69,7 +74,7 @@ void readSettings(bool show)
   }
 
   // Deserialize the JSON document
-  StaticJsonDocument<512> doc;
+  StaticJsonDocument<1024> doc;
   DeserializationError error = deserializeJson(doc, file);
   if (error)
   {
@@ -99,30 +104,40 @@ void readSettings(bool show)
   settingLEDblink         = doc["LEDblink"]|settingLEDblink;
   settingGPIOSENSORSenabled = doc["GPIOSENSORSenabled"] | settingGPIOSENSORSenabled;
   settingGPIOSENSORSpin = doc["GPIOSENSORSpin"] | settingGPIOSENSORSpin;
+  settingGPIOSENSORSinterval = doc["GPIOSENSORSinterval"] | settingGPIOSENSORSinterval;
+  settingOTGWcommandenable = doc["OTGWcommandenable"] | settingOTGWcommandenable;
+  settingOTGWcommands     = doc["OTGWcommands"].as<String>();
+  if (settingOTGWcommands=="null") settingOTGWcommands = "";
+  settingGPIOOUTPUTSenabled = doc["GPIOOUTPUTSenabled"] | settingGPIOOUTPUTSenabled;
+  settingGPIOOUTPUTSpin = doc["GPIOOUTPUTSpin"] | settingGPIOOUTPUTSpin;
+  settingGPIOOUTPUTStriggerBit = doc["GPIOOUTPUTStriggerBit"] | settingGPIOOUTPUTStriggerBit;
 
   // Close the file (Curiously, File's destructor doesn't close the file)
   file.close();
-
-  //Update some settings right now 
-  MDNS.setHostname(CSTR(settingHostname));    // start advertising with new(?) settingHostname
 
   DebugTln(F(" .. done\r\n"));
 
   if (show) {
     Debugln(F("\r\n==== read Settings ===================================================\r"));
-    Debugf("Hostname      : %s\r\n",  CSTR(settingHostname));
-    Debugf("MQTT enabled  : %s\r\n",  CBOOLEAN(settingMQTTenable));
-    Debugf("MQTT broker   : %s\r\n",  CSTR(settingMQTTbroker));
-    Debugf("MQTT port     : %d\r\n",  settingMQTTbrokerPort);
-    Debugf("MQTT username : %s\r\n",  CSTR(settingMQTTuser));
-    Debugf("MQTT password : %s\r\n",  CSTR(settingMQTTpasswd));
-    Debugf("MQTT toptopic : %s\r\n",  CSTR(settingMQTTtopTopic));
-    Debugf("HA prefix     : %s\r\n",  CSTR(settingMQTThaprefix));
-    Debugf("NTP enabled   : %s\r\n",  CBOOLEAN(settingNTPenable));
-    Debugf("NPT timezone  : %s\r\n",  CSTR(settingNTPtimezone));
-    Debugf("Led Blink     : %s\r\n",  CBOOLEAN(settingLEDblink));
-    Debugf("GPIO Sensors  : %s\r\n",  CBOOLEAN(settingGPIOSENSORSenabled));
-    Debugf("GPIO Sen. Pin : %d\r\n",  settingGPIOSENSORSpin);
+    Debugf("Hostname              : %s\r\n", CSTR(settingHostname));
+    Debugf("MQTT enabled          : %s\r\n", CBOOLEAN(settingMQTTenable));
+    Debugf("MQTT broker           : %s\r\n", CSTR(settingMQTTbroker));
+    Debugf("MQTT port             : %d\r\n", settingMQTTbrokerPort);
+    Debugf("MQTT username         : %s\r\n", CSTR(settingMQTTuser));
+    Debugf("MQTT password         : %s\r\n", CSTR(settingMQTTpasswd));
+    Debugf("MQTT toptopic         : %s\r\n", CSTR(settingMQTTtopTopic));
+    Debugf("HA prefix             : %s\r\n", CSTR(settingMQTThaprefix));
+    Debugf("NTP enabled           : %s\r\n", CBOOLEAN(settingNTPenable));
+    Debugf("NPT timezone          : %s\r\n", CSTR(settingNTPtimezone));
+    Debugf("Led Blink             : %s\r\n", CBOOLEAN(settingLEDblink));
+    Debugf("GPIO Sensors          : %s\r\n",  CBOOLEAN(settingGPIOSENSORSenabled));
+    Debugf("GPIO Sen. Pin         : %d\r\n",  settingGPIOSENSORSpin);
+    Debugf("GPIO Interval         : %s\r\n",  CBOOLEAN(settingGPIOSENSORSinterval));
+    Debugf("OTGW boot cmd enabled : %s\r\n",  CBOOLEAN(settingOTGWcommandenable));
+    Debugf("OTGW boot cmd         : %s\r\n",  CSTR(settingOTGWcommands));
+    Debugf("GPIO Outputs          : %s\r\n",  CBOOLEAN(settingGPIOOUTPUTSenabled));
+    Debugf("GPIO Out. Pin         : %d\r\n",  settingGPIOOUTPUTSpin);
+    Debugf("GPIO Out. Trg. Bit    : %d\r\n",  settingGPIOOUTPUTStriggerBit);
     }
   
   Debugln(F("-\r\n"));
@@ -144,6 +159,13 @@ void updateSetting(const char *field, const char *newValue)
       settingMQTTtopTopic = settingMQTTtopTopic.substring(0, pos-1);
     }
     
+    //Update some settings right now 
+    startMDNS(CSTR(settingHostname));
+    startLLMNR(CSTR(settingHostname));
+  
+    //Resetart MQTT connection every "save settings"
+    startMQTT();
+
     Debugln();
     DebugTf("Need reboot before new %s.local will be available!\r\n\n", CSTR(settingHostname));
   }
@@ -161,9 +183,10 @@ void updateSetting(const char *field, const char *newValue)
   }
   if (stricmp(field, "MQTThaprefix")==0)    {
     settingMQTThaprefix = String(newValue);
-    if (settingMQTThaprefix.length()==0) settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
+    if (settingMQTThaprefix.length()==0)    settingMQTThaprefix = HOME_ASSISTANT_DISCOVERY_PREFIX;
   }
-  if (stricmp(field, "MQTTOTmessage")==0)  settingMQTTOTmessage = EVALBOOLEAN(newValue);
+  if (stricmp(field, "MQTTOTmessage")==0)   settingMQTTOTmessage = EVALBOOLEAN(newValue);
+  if (strstr(field, "mqtt") != NULL)        startMQTT();//restart MQTT on change of any setting
   
   if (stricmp(field, "NTPenable")==0)      settingNTPenable = EVALBOOLEAN(newValue);
   if (stricmp(field, "NTPtimezone")==0)    {
@@ -183,9 +206,37 @@ void updateSetting(const char *field, const char *newValue)
     Debugln();
     DebugTf("Need reboot before GPIO SENSORS will use new pin GPIO%d!\r\n\n", settingGPIOSENSORSpin);
   }
+  if (stricmp(field, "GPIOSENSORSinterval") == 0) {
+    settingGPIOSENSORSinterval = atoi(newValue);
+    CHANGE_INTERVAL_SEC(timerpollsensor, settingGPIOSENSORSinterval, CATCH_UP_MISSED_TICKS); 
+  }
+  if (stricmp(field, "OTGWcommandenable")==0)    settingOTGWcommandenable = EVALBOOLEAN(newValue);
+  if (stricmp(field, "OTGWcommands")==0)         settingOTGWcommands = String(newValue);
+  if (stricmp(field, "GPIOOUTPUTSenabled") == 0)
+  {
+    settingGPIOOUTPUTSenabled = EVALBOOLEAN(newValue);
+    Debugln();
+    DebugTf("Need reboot before GPIO OUTPUTS will be enabled on pin GPIO%d!\r\n\n", settingGPIOOUTPUTSenabled);
+  }
+  if (stricmp(field, "GPIOOUTPUTSpin") == 0)
+  {
+    settingGPIOOUTPUTSpin = atoi(newValue);
+    Debugln();
+    DebugTf("Need reboot before GPIO OUTPUTS will use new pin GPIO%d!\r\n\n", settingGPIOOUTPUTSpin);
+  }
+  if (stricmp(field, "GPIOOUTPUTStriggerBit") == 0)
+  {
+    settingGPIOOUTPUTStriggerBit = atoi(newValue);
+    Debugln();
+    DebugTf("Need reboot before GPIO OUTPUTS will use new trigger bit %d!\r\n\n", settingGPIOOUTPUTStriggerBit);
+  }
 
   //finally update write settings
   writeSettings(false);
+  // if (strstr(field, "hostname")!= NULL) {
+  //   //restart wifi
+  //   startWIFI( CSTR(settingHostname), 240)
+  // } 
 
 } // updateSetting()
 

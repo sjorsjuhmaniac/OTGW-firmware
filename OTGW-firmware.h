@@ -58,7 +58,6 @@ void sendMQTTData(const char*, const char*, const bool);
 
 //Global variables
 WiFiClient  wifiClient;
-bool        Verbose = false;
 char        cMsg[CMSG_SIZE];
 char        fChar[10];
 String      lastReset = "";
@@ -81,7 +80,7 @@ String    settingHostname = _HOSTNAME;
 
 //MQTT settings
 bool      statusMQTTconnection = false; 
-bool      settingMQTTenable = false;
+bool      settingMQTTenable = true;
 bool      settingMQTTsecure = false; 
 String    settingMQTTbroker= "192.168.88.254";
 int16_t   settingMQTTbrokerPort = 1883; 
@@ -97,13 +96,29 @@ bool      settingLEDblink = true;
 // GPIO Sensor Settings
 bool      settingGPIOSENSORSenabled = false;
 int8_t    settingGPIOSENSORSpin = 10;
+int16_t   settingGPIOSENSORSinterval = 5;
+
+// Boot commands
+bool      settingOTGWcommandenable = false;
+String    settingOTGWcommands = "";
+
+//debug flags
+bool      bDebugOTmsg = true;
+bool      bDebugRestAPI = false;
+bool      bDebugMQTT = true;
+
+// GPIO Output Settings
+bool      settingMyDEBUG = false;
+bool      settingGPIOOUTPUTSenabled = false;
+int8_t    settingGPIOOUTPUTSpin = 16;
+int8_t    settingGPIOOUTPUTStriggerBit = 0;
 
 //Now load network suff
 #include "networkStuff.h"
 
-// That's all folks...
+    // That's all folks...
 
-/***************************************************************************
+    /***************************************************************************
 *
 * Permission is hereby granted, free of charge, to any person obtaining a
 * copy of this software and associated documentation files (the
